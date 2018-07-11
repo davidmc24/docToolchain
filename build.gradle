@@ -33,7 +33,7 @@ apply from: 'scripts/exportChangelog.gradle'
 apply from: 'scripts/exportJiraIssues.gradle'
 apply from: 'scripts/exportExcel.gradle'
 apply from: 'scripts/pandoc.gradle'
-apply from: 'scripts/publishToConfluence.gradle'
+apply plugin: doctoolchain.confluence.PublishToConfluencePlugin
 apply from: 'scripts/htmlSanityCheck.gradle'
 
 // let's set a defaultTask for convenience
