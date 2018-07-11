@@ -146,14 +146,12 @@ class PublishToConfluenceTask extends DefaultTask {
         }
     }
 
-    // helper functions
-
-    def MD5(String s) {
+    static def MD5(String s) {
         MessageDigest.getInstance("MD5").digest(s.bytes).encodeHex().toString()
     }
 
     // for getting better error message from the REST-API
-    void trythis(Closure action) {
+    static void trythis(Closure action) {
         try {
             action.run()
         } catch (HttpResponseException error) {
@@ -163,10 +161,10 @@ class PublishToConfluenceTask extends DefaultTask {
         }
     }
 
-    def parseAdmonitionBlock(block, String type) {
-        content = block.select(".content").first()
-        titleElement = content.select(".title")
-        titleText = ''
+    static def parseAdmonitionBlock(block, String type) {
+        def content = block.select(".content").first()
+        def titleElement = content.select(".title")
+        def titleText = ''
         if (titleElement != null) {
             titleText = "<ac:parameter ac:name=\"title\">${titleElement.text()}</ac:parameter>"
             titleElement.remove()
@@ -236,12 +234,12 @@ class PublishToConfluenceTask extends DefaultTask {
         confluencePagePrefix + pageTitle
     }
 
-    def rewriteMarks(body) {
+    static void rewriteMarks(body) {
         // Confluence strips out mark elements.  Replace them with default formatting.
         body.select('mark').wrap('<span style="background:#ff0;color:#000"></style>').unwrap()
     }
 
-    def rewriteDescriptionLists(body) {
+    static def rewriteDescriptionLists(body) {
         def TAGS = [dt: 'th', dd: 'td']
         body.select('dl').each { dl ->
             // WHATWG allows wrapping dt/dd in divs, simply unwrap them
@@ -292,7 +290,7 @@ class PublishToConfluenceTask extends DefaultTask {
         }
     }
 
-    def rewriteInternalLinks(body, anchors, pageAnchors) {
+    static def rewriteInternalLinks(body, anchors, pageAnchors) {
         // find internal cross-references and replace them with link macros
         body.select('a[href]').each { a ->
             def href = a.attr('href')
@@ -313,7 +311,7 @@ class PublishToConfluenceTask extends DefaultTask {
         }
     }
 
-    def rewriteCodeblocks(body) {
+    static def rewriteCodeblocks(body) {
         body.select('pre > code').each { code ->
             if (code.attr('data-lang')) {
                 code.select('span[class]').each { span ->
@@ -329,7 +327,7 @@ class PublishToConfluenceTask extends DefaultTask {
         }
     }
 
-    def unescapeCDATASections(def html) {
+    static def unescapeCDATASections(def html) {
         def start = html.indexOf(CDATA_PLACEHOLDER_START)
         while (start > -1) {
             def end = html.indexOf(CDATA_PLACEHOLDER_END, start)
@@ -541,7 +539,7 @@ class PublishToConfluenceTask extends DefaultTask {
         }
     }
 
-    Map parseAnchors(Map page) {
+    static Map parseAnchors(Map page) {
         def anchors = [:]
         page.body.select('[id]').each { anchor ->
             def name = anchor.attr('id')
@@ -560,7 +558,7 @@ class PublishToConfluenceTask extends DefaultTask {
         }
     }
 
-    Map recordPageAnchor(Elements head) {
+    static Map recordPageAnchor(Elements head) {
         def a = [:]
         if (head.attr('id')) {
             a[head.attr('id')] = head.text()
@@ -568,7 +566,7 @@ class PublishToConfluenceTask extends DefaultTask {
         a
     }
 
-    def promoteHeaders(tree, start, offset) {
+    static def promoteHeaders(tree, start, offset) {
         (start..7).each { i ->
             tree.select("h${i}").tagName("h${i - offset}").before('<br />')
         }
